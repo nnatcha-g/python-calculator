@@ -3,32 +3,57 @@ class Calculator:
         return a + b
 
     def subtract(self, a, b):
-        return b - a
+        return a - b
 
     def multiply(self, a, b):
         result = 0
-        for i in range(b+1):
+        is_negative = False
+
+        if (b < 0):
+            b = -b
+            is_negative = not is_negative
+        if (a < 0):
+            a = -a
+            is_negative = not is_negative
+
+        for _ in range(b):
             result = self.add(result, a)
+
+        if is_negative:
+            result = -result
+
         return result
 
     def divide(self, a, b):
-        result = 0
-        while a > b:
-            a = self.subtract(a, b)
-            result += 1
-        return result
-    
-    def modulo(self, a, b):
-        while a <= b:
-            a = a-b
-        return a
+        if b == 0:
+            raise ZeroDivisionError("Cannot divide by zero.")
 
-# Example usage:
-if __name__ == "__main__":
-    calc = Calculator()
-    print("This is a simple calculator class!")
-    print("Example: addition: ", calc.add(1, 2))
-    print("Example: subtraction: ", calc.subtract(4, 2))
-    print("Example: multiplication: ", calc.multiply(2, 3))
-    print("Example: division: ", calc.divide(10, 2))
-    print("Example: modulo: ", calc.modulo(10, 3))
+        a_sign = 1 if a >= 0 else -1
+        b_sign = 1 if b >= 0 else -1
+        sign = a_sign * b_sign
+
+        a_abs, b_abs = abs(a), abs(b)
+        result = 0
+
+        while a_abs >= b_abs:
+            a_abs = self.subtract(a_abs, b_abs)
+            result = self.add(result, 1)
+
+        if sign < 0:
+            if a_abs > 0:
+                result = self.add(result, 1)
+            result = -result
+
+        return result
+
+    def modulo(self, a, b):
+        if b == 0:
+            raise ZeroDivisionError("Cannot modulo by zero.")
+
+        # Compute floor division
+        quotient = self.divide(a, b)
+        # Compute the product of quotient and divisor
+        product = self.multiply(quotient, b)
+        # Compute the remainder
+        remainder = self.subtract(a, product)
+        return remainder
